@@ -1,8 +1,14 @@
+import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from config import settings
+
+# Configure logging matching clintel's structure
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("httpcore").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def get_application() -> FastAPI:
