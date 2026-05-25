@@ -2,7 +2,7 @@
 set -euo pipefail
 
 BACKEND_URL="${OTHER_BACKEND_URL:-http://localhost:8080}"
-API_KEY="${OTHER_BACKEND_API_KEY:-dermagptsecretkey123#}"
+API_KEY="${OTHER_BACKEND_API_KEY:-}"
 PAYLOAD='{"message":"Can I use niacinamide on my face to treat acne?"}'
 
 RAW_RESPONSE="$(
