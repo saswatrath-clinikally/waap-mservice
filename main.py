@@ -5,7 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api import api_router
 from config import settings
 
-# Configure logging matching clintel's structure
+# Configure root logging configuration
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
