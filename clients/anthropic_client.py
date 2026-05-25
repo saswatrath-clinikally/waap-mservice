@@ -1,8 +1,10 @@
 from typing import Any, Optional
 from config import settings
+from constants import DEFAULT_ANTHROPIC_MODEL, DEFAULT_ANTHROPIC_MAX_TOKENS
 
 try:
     from anthropic import AsyncAnthropic  # type: ignore
+
     HAS_ANTHROPIC = True
 except Exception:  # pragma: no cover
     HAS_ANTHROPIC = False
@@ -11,9 +13,9 @@ except Exception:  # pragma: no cover
 class AnthropicClient:
     def __init__(self):
         self.api_key = settings.ANTHROPIC_API_KEY
-        self.model = settings.ANTHROPIC_MODEL
-        self.max_tokens = settings.ANTHROPIC_MAX_TOKENS
-        
+        self.model = DEFAULT_ANTHROPIC_MODEL
+        self.max_tokens = DEFAULT_ANTHROPIC_MAX_TOKENS
+
         self.sdk_client: Optional[Any] = None
         if HAS_ANTHROPIC and self.api_key:
             self.sdk_client = AsyncAnthropic(api_key=self.api_key)

@@ -10,16 +10,11 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     # External Backend config
-    CLINTEL_BACKEND_URL: str = "http://localhost:8080"
+    CLINTEL_BACKEND_URL: str
     CLINTEL_BACKEND_API_KEY: str
 
     # Anthropic transform config
     ANTHROPIC_API_KEY: str
-    ANTHROPIC_MODEL: str = "claude-sonnet-4-20250514"
-    ANTHROPIC_MAX_TOKENS: int = 512
-
-    # Optional Database config
-    # DATABASE_URI: str = "postgresql+asyncpg://user:password@localhost/dbname"
 
     model_config = SettingsConfigDict(
         env_file=".env",
