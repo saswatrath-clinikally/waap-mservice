@@ -1,15 +1,17 @@
 import json
 import httpx
-from fastapi import HTTPException
-from agents import transformer
+from fastapi import HTTPException, status
+from agents.transformer import transformer
 from config import settings
 from constants import (
     DEFAULT_TIMEOUT,
     HEADER_CONTENT_TYPE,
     HEADER_X_API_KEY,
     CONTENT_TYPE_JSON,
-    HTTP_502_BAD_GATEWAY,
 )
+
+# Global client to allow connection pooling and keep-alive across multiple proxy requests
+http_client = httpx.AsyncClient(timeout=DEFAULT_TIMEOUT)
 
 
 async def _transform_backend_response(response: httpx.Response) -> bytes:
@@ -36,28 +38,26 @@ async def _transform_backend_response(response: httpx.Response) -> bytes:
 
 async def forward_chat_request(payload: dict) -> tuple[bytes, int, str]:
     headers = {
-        HEADER_X_API_KEY: settings.CLINTEL_BACKEND_API_KEY,
+        HEADER_X_API_KEY: settings.CLINTEL_BACKEND_X_API_KEY,
         HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
     }
 
-    async with httpx.AsyncClient() as client:
-        try:
-            response = await client.post(
-                f"{settings.CLINTEL_BACKEND_URL.rstrip('/')}/chat",
-                json=payload,
-                headers=headers,
-                timeout=DEFAULT_TIMEOUT,
-            )
-            transformed_content = await _transform_backend_response(response)
+    try:
+        response = await http_client.post(
+            f"{settings.CLINTEL_BACKEND_URL.rstrip('/')}/chat",
+            json=payload,
+            headers=headers,
+        )
+        transformed_content = await _transform_backend_response(response)
 
-            return (
-                transformed_content,
-                response.status_code,
-                response.headers.get(HEADER_CONTENT_TYPE.lower(), CONTENT_TYPE_JSON),
-            )
+        return (
+            transformed_content,
+            response.status_code,
+            response.headers.get(HEADER_CONTENT_TYPE.lower(), CONTENT_TYPE_JSON),
+        )
 
-        except httpx.HTTPError as e:
-            raise HTTPException(
-                status_code=HTTP_502_BAD_GATEWAY,
-                detail=f"Failed to communicate with the target backend: {str(e)}",
-            )
+    except httpx.HTTPError as e:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY,
+            detail=f"Failed to communicate with the target backend: {str(e)}",
+        )

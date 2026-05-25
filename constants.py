@@ -7,13 +7,17 @@ class PromptNames(str, Enum):
     TRANSFORMER = "agents/transformer"
 
 
+class ModelName(str, Enum):
+    """AI model names used in the system."""
+
+    CLAUDE_SONNET_4 = "claude-sonnet-4-20250514"
+    CLAUDE_HAIKU_4_5 = "claude-haiku-4-5-20251001"
+
+
 # API Constants
 DEFAULT_TIMEOUT: float = 60.0
-HTTP_400_BAD_REQUEST: int = 400
-HTTP_502_BAD_GATEWAY: int = 502
 
 # Anthropic Defaults
-DEFAULT_ANTHROPIC_MODEL: str = "claude-sonnet-4-20250514"
 DEFAULT_ANTHROPIC_MAX_TOKENS: int = 512
 
 # Headers

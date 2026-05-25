@@ -1,6 +1,6 @@
 from typing import Any, Optional
 from config import settings
-from constants import DEFAULT_ANTHROPIC_MODEL, DEFAULT_ANTHROPIC_MAX_TOKENS
+from constants import ModelName, DEFAULT_ANTHROPIC_MAX_TOKENS
 
 try:
     from anthropic import AsyncAnthropic  # type: ignore
@@ -13,7 +13,7 @@ except Exception:  # pragma: no cover
 class AnthropicClient:
     def __init__(self):
         self.api_key = settings.ANTHROPIC_API_KEY
-        self.model = DEFAULT_ANTHROPIC_MODEL
+        self.model = ModelName.CLAUDE_SONNET_4.value
         self.max_tokens = DEFAULT_ANTHROPIC_MAX_TOKENS
 
         self.sdk_client: Optional[Any] = None

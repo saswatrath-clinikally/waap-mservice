@@ -11,7 +11,7 @@ class Settings(BaseSettings):
 
     # External Backend config
     CLINTEL_BACKEND_URL: str
-    CLINTEL_BACKEND_API_KEY: str
+    CLINTEL_BACKEND_X_API_KEY: str
 
     # Anthropic transform config
     ANTHROPIC_API_KEY: str
