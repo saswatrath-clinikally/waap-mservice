@@ -1,7 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
-
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Wapp Middleware"
     API_V1_STR: str = "/api/v1"
@@ -11,10 +10,10 @@ class Settings(BaseSettings):
 
     # External Backend config
     OTHER_BACKEND_URL: str = "http://localhost:8080"
-    OTHER_BACKEND_API_KEY: str = ""  # Should be set in .env
+    OTHER_BACKEND_API_KEY: str
 
     # Anthropic transform config
-    ANTHROPIC_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str
     ANTHROPIC_BASE_URL: str = "https://api.anthropic.com/v1"
     ANTHROPIC_MODEL: str = "claude-sonnet-4-20250514"
     ANTHROPIC_MAX_TOKENS: int = 512
@@ -28,5 +27,6 @@ class Settings(BaseSettings):
         case_sensitive=True,
     )
 
-
-settings = Settings()
+# Instantiate settings but tell mypy to ignore instantiation checks 
+# because Pydantic populates these fields from the environment
+settings = Settings()  # type: ignore
