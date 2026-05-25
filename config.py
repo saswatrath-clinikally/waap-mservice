@@ -9,12 +9,11 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     # External Backend config
-    OTHER_BACKEND_URL: str = "http://localhost:8080"
-    OTHER_BACKEND_API_KEY: str
+    CLINTEL_BACKEND_URL: str = "http://localhost:8080"
+    CLINTEL_BACKEND_API_KEY: str
 
     # Anthropic transform config
     ANTHROPIC_API_KEY: str
-    ANTHROPIC_BASE_URL: str = "https://api.anthropic.com/v1"
     ANTHROPIC_MODEL: str = "claude-sonnet-4-20250514"
     ANTHROPIC_MAX_TOKENS: int = 512
 

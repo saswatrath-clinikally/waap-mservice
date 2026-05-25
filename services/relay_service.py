@@ -36,17 +36,17 @@ async def _transform_backend_response(response: httpx.Response) -> bytes:
 
 async def forward_chat_request(payload: dict) -> tuple[bytes, int, str]:
     headers = {
-        HEADER_X_API_KEY: settings.OTHER_BACKEND_API_KEY,
-        HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON,
+        HEADER_X_API_KEY: settings.CLINTEL_BACKEND_API_KEY,
+        HEADER_CONTENT_TYPE: CONTENT_TYPE_JSON
     }
-
+    
     async with httpx.AsyncClient() as client:
         try:
             response = await client.post(
-                f"{settings.OTHER_BACKEND_URL}/chat",
+                f"{settings.CLINTEL_BACKEND_URL.rstrip('/')}/chat", 
                 json=payload,
                 headers=headers,
-                timeout=DEFAULT_TIMEOUT,
+                timeout=DEFAULT_TIMEOUT
             )
             transformed_content = await _transform_backend_response(response)
 

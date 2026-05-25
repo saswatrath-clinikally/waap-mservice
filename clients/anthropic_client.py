@@ -12,7 +12,7 @@ except Exception:  # pragma: no cover
 class AnthropicClient:
     def __init__(self):
         self.api_key = settings.ANTHROPIC_API_KEY
-        self.base_url = settings.ANTHROPIC_BASE_URL.rstrip("/")
+        self.base_url = "https://api.anthropic.com/v1"
         self.model = settings.ANTHROPIC_MODEL
         self.max_tokens = settings.ANTHROPIC_MAX_TOKENS
 
