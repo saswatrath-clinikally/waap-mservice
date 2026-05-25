@@ -1,6 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
+
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Wapp Middleware"
     API_V1_STR: str = "/api/v1"
@@ -26,6 +27,7 @@ class Settings(BaseSettings):
         case_sensitive=True,
     )
 
-# Instantiate settings but tell mypy to ignore instantiation checks 
+
+# Instantiate settings but tell mypy to ignore instantiation checks
 # because Pydantic populates these fields from the environment
 settings = Settings()  # type: ignore

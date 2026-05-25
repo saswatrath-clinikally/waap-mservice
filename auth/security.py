@@ -16,6 +16,7 @@ def verify_api_key(plain_api_key: str, hashed_api_key: str) -> bool:
     """Verifies a plain-text API key against its hashed version."""
     return bool(pwd_context.verify(plain_api_key, hashed_api_key))
 
+
 async def get_api_key(api_key: str = Security(api_key_header)) -> bool:
     """
     A dependency that checks for and validates the API key.
@@ -24,11 +25,12 @@ async def get_api_key(api_key: str = Security(api_key_header)) -> bool:
     if not HASHED_API_KEY:
         # If no auth is configured, default to secure (block)
         return False
-    
+
     if not api_key:
         return False
 
     return verify_api_key(api_key, HASHED_API_KEY)
+
 
 def hash_api_key(plain_api_key: str) -> str:
     """Hashes a new API key for storage."""

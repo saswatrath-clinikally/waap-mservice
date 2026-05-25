@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Response, status
 
-from services.relay_service import forward_chat_request
+from services.chat_service import forward_chat_request
 from auth.security import get_api_key
 from schemas.chat import ChatRequest
 
@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.post("/chat")
-async def chat_relay(
+async def chat_endpoint(
     chat_request: ChatRequest,
     response: Response,
     is_authenticated: bool = Depends(get_api_key),
@@ -26,14 +26,6 @@ async def chat_relay(
 
     # Extract all properties from Pydantic model (including 'extra' allowed fields)
     payload = chat_request.model_dump(exclude_none=True)
-
-    content, status_code, media_type = await forward_chat_request(payload)
-
-    return Response(
-        content=content,
-        status_code=status_code,
-        media_type=media_type,
-    )
 
     content, status_code, media_type = await forward_chat_request(payload)
 
