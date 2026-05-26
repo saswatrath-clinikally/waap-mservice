@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     # CORS setup
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
+    # Redis config
+    REDIS_URL: str = "redis://localhost:6379/0"
+    REDIS_THREAD_TTL: int = 60 * 60 * 24 * 30  # 30 days
+
     # External Backend config
     CLINTEL_BACKEND_URL: str
     CLINTEL_BACKEND_X_API_KEY: str

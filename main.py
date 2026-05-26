@@ -1,9 +1,11 @@
 import logging
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import api_router
 from config import settings
+from clients.redis_client import init_redis, close_redis
 
 # Configure root logging configuration
 logging.basicConfig(level=logging.INFO)
@@ -11,9 +13,17 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_redis()
+    yield
+    await close_redis()
+
+
 def get_application() -> FastAPI:
     application = FastAPI(
         title=settings.PROJECT_NAME,
+        lifespan=lifespan,
         openapi_url=f"{settings.API_V1_STR}/openapi.json",
         docs_url=f"{settings.API_V1_STR}/docs",
         redoc_url=f"{settings.API_V1_STR}/redoc",

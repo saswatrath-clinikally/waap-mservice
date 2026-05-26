@@ -6,6 +6,9 @@ class ChatRequest(BaseModel):
     """Schema for incoming requests to the middleware proxy"""
 
     message: str = Field(..., description="The user message")
+    phone_number: Optional[str] = Field(
+        None, description="User's phone number for thread lookup"
+    )
     thread_id: Optional[str] = Field(None, description="Optional thread identifier")
     file_urls: Optional[List[str]] = Field(
         None, description="Optional list of file URLs"

@@ -17,8 +17,11 @@ async def chat_endpoint(
     """
     # Extract all properties from Pydantic model (including 'extra' allowed fields)
     payload = chat_request.model_dump(exclude_none=True)
+    phone_number = payload.get("phone_number")
 
-    content, status_code, media_type = await forward_chat_request(payload)
+    content, status_code, media_type = await forward_chat_request(
+        phone_number, payload
+    )
 
     return Response(
         content=content,
