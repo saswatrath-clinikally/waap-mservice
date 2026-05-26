@@ -1,6 +1,5 @@
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
-from constants import AgentType, ImageCategory
 
 
 class ChatRequest(BaseModel):
@@ -11,7 +10,7 @@ class ChatRequest(BaseModel):
     file_urls: Optional[List[str]] = Field(
         None, description="Optional list of file URLs"
     )
-    image_category: Optional[ImageCategory] = Field(
+    image_category: Optional[str] = Field(
         None, description="Optional category for image processing"
     )
 
@@ -25,7 +24,7 @@ class ChatResponse(BaseModel):
     response: str = Field(..., description="The assistant's response")
     thread_id: str = Field(..., description="The thread identifier")
     trace_id: Optional[str] = Field(None, description="Optional trace identifier")
-    agent_type: Optional[AgentType] = Field(
+    agent_type: Optional[str] = Field(
         None, description="Optional agent type from backend"
     )
     context: Optional[Dict[str, Any]] = Field(
