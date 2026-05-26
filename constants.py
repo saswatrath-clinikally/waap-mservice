@@ -1,37 +1,11 @@
 from enum import Enum
 
 
-class PromptNames(str, Enum):
-    """Prompt names used throughout the application."""
-
-    TRANSFORMER = "agents/transformer"
-
-
 class ModelName(str, Enum):
     """AI model names used in the system."""
 
     CLAUDE_SONNET_4 = "claude-sonnet-4-20250514"
     CLAUDE_HAIKU_4_5 = "claude-haiku-4-5-20251001"
-
-
-class ImageCategory(str, Enum):
-    """Categories for image classification."""
-
-    DIAGNOSIS = "DIAGNOSIS"
-    PRESCRIPTION = "PRESCRIPTION"
-
-
-class AgentType(str, Enum):
-    """Available agent types in the system."""
-
-    ROUTER = "router"
-    DIAGNOSIS = "diagnosis"
-    PRODUCTS = "products"
-    PRESCRIPTION = "prescription"
-    SEARCH = "search"
-    SUPPORT = "support"
-    OUTPUT = "output"
-    FACE_ANALYSIS = "face_analysis"
 
 
 # API Constants
