@@ -1,5 +1,4 @@
-from fastapi import APIRouter, UploadFile, File, Response
-from typing import List
+from fastapi import APIRouter, Request, Response
 
 from services.upload_service import forward_upload_request
 
@@ -7,15 +6,15 @@ router = APIRouter()
 
 
 @router.post("/upload")
-async def upload_endpoint(
-    response: Response,
-    files: List[UploadFile] = File(...),
-):
+async def upload_endpoint(request: Request):
     """
-    Acts as a pass-through proxy for the file upload endpoint.
-    Receives multipart/form-data from Express -> Forwards to clintel /upload/v2 -> Returns response.
+    Acts as a raw network pass-through proxy for the file upload endpoint.
+    Receives raw HTTP request from Express -> Forwards directly to clintel /upload/v2 -> Returns response.
     """
-    json_response, status_code = await forward_upload_request(files)
+    content, status_code, media_type = await forward_upload_request(request)
 
-    response.status_code = status_code
-    return json_response
+    return Response(
+        content=content,
+        status_code=status_code,
+        media_type=media_type,
+    )

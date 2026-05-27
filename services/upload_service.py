@@ -1,6 +1,5 @@
 import httpx
-from fastapi import HTTPException, status, UploadFile
-from typing import List
+from fastapi import HTTPException, status, Request
 
 from config import settings
 from constants import DEFAULT_TIMEOUT, HEADER_X_API_KEY
@@ -8,31 +7,43 @@ from constants import DEFAULT_TIMEOUT, HEADER_X_API_KEY
 http_client = httpx.AsyncClient(timeout=DEFAULT_TIMEOUT)
 
 
-async def forward_upload_request(files: List[UploadFile]) -> tuple[dict, int]:
+async def forward_upload_request(request: Request) -> tuple[bytes, int, str]:
     """
-    Forwards file uploads to clintel's /upload/v2 endpoint.
+    Forwards raw multipart/form-data HTTP payload to clintel's /upload/v2 endpoint.
     """
+    # Extract headers and filter out problematic ones for the proxy
     headers = {
-        HEADER_X_API_KEY: settings.CLINTEL_BACKEND_X_API_KEY,
+        key: value
+        for key, value in request.headers.items()
+        if key.lower()
+        not in {"host", "content-length", "connection", "transfer-encoding"}
     }
 
-    # Prepare files for httpx
-    # httpx expects files as a list of tuples: ("field_name", (filename, content, content_type))
-    files_payload = []
-    for file in files:
-        content = await file.read()
-        files_payload.append(("files", (file.filename, content, file.content_type)))
+    # Inject our internal auth key for clintel
+    headers[HEADER_X_API_KEY] = settings.CLINTEL_BACKEND_X_API_KEY
+
+    target_url = f"{settings.CLINTEL_BACKEND_URL.rstrip('/')}/upload/v2"
+    if request.url.query:
+        target_url = f"{target_url}?{request.url.query}"
 
     try:
+        # Read the raw stream of bytes (multipart/form-data exactly as sent by Express)
+        body = await request.body()
+
         response = await http_client.post(
-            f"{settings.CLINTEL_BACKEND_URL.rstrip('/')}/upload/v2",
-            files=files_payload,
+            target_url,
+            content=body,
             headers=headers,
         )
-        return response.json(), response.status_code
 
-    except httpx.HTTPError as e:
+    except httpx.HTTPError as exc:
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
-            detail=f"Failed to communicate with clintel backend during upload: {str(e)}",
+            detail=f"Failed to communicate with the upload backend: {str(exc)}",
         )
+
+    return (
+        response.content,
+        response.status_code,
+        response.headers.get("content-type", "application/octet-stream"),
+    )
