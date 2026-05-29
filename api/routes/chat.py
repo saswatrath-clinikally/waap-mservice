@@ -19,9 +19,16 @@ async def chat_endpoint(
     payload = chat_request.model_dump(exclude_none=True)
     phone_number = payload.get("phone_number")
 
-    content, status_code, media_type = await forward_chat_request(
-        phone_number, payload
-    )
+    content, status_code, media_type = await forward_chat_request(phone_number, payload)
+
+    # Print the exact payload we are sending back to the Express Server
+    print("\n--- FINAL CHAT RESPONSE TO EXPRESS ---")
+    try:
+        import json
+        print(json.dumps(json.loads(content), indent=2, ensure_ascii=False))
+    except Exception:
+        print(content.decode("utf-8", errors="replace"))
+    print("--------------------------------------\n")
 
     return Response(
         content=content,

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -29,9 +30,42 @@ class TransformerAgent:
             and "response" in payload
             and isinstance(payload["response"], str)
         ):
-            text = payload["response"]
-            if text.strip():
-                transformed = await self.transform(text)
+            raw_text = payload["response"]
+
+            # The clintel backend sometimes wraps its response in a double-encoded JSON string
+            # e.g. "response": "{\n  \"message\": \"...\",\n  \"products\": []}"
+            # We must detect this, unpack it, transform ONLY the text message, and repackage it.
+            try:
+                nested_json = json.loads(raw_text)
+                if isinstance(nested_json, dict):
+                    # Check for "response" or "message" key in the nested JSON
+                    target_key = (
+                        "response"
+                        if "response" in nested_json
+                        else "message"
+                        if "message" in nested_json
+                        else None
+                    )
+
+                    if (
+                        target_key
+                        and isinstance(nested_json[target_key], str)
+                        and nested_json[target_key].strip()
+                    ):
+                        # Transform just the text inside the nested JSON
+                        transformed_text = await self.transform(nested_json[target_key])
+                        nested_json[target_key] = transformed_text
+                        # Repackage the JSON exactly as clintel sent it
+                        payload["response"] = json.dumps(
+                            nested_json, ensure_ascii=False
+                        )
+                        return payload
+            except Exception:
+                pass
+
+            # If it wasn't a nested JSON string, transform the raw text directly
+            if raw_text.strip():
+                transformed = await self.transform(raw_text)
                 payload["response"] = transformed
 
         return payload

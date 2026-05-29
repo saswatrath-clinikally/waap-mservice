@@ -62,6 +62,14 @@ async def forward_chat_request(
             detail=f"Failed to communicate with the target backend: {str(e)}",
         )
 
+    # Print the exact payload received from the clintel backend
+    print("\n--- RAW CHAT RESPONSE FROM CLINTEL ---")
+    try:
+        print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+    except Exception:
+        print(response.text)
+    print("--------------------------------------\n")
+
     if phone_number:
         try:
             resp_payload = response.json()
