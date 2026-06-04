@@ -1,4 +1,5 @@
 import json
+import logging
 import httpx
 from fastapi import HTTPException, status
 from agents.transformer import transformer
@@ -11,6 +12,7 @@ from constants import (
     CONTENT_TYPE_JSON,
 )
 
+logger = logging.getLogger(__name__)
 http_client = httpx.AsyncClient(timeout=DEFAULT_TIMEOUT)
 
 
@@ -57,18 +59,18 @@ async def forward_chat_request(
             headers=headers,
         )
     except httpx.HTTPError as e:
+        logger.error(f"HTTPError communicating with backend: {e}")
         raise HTTPException(
             status_code=status.HTTP_502_BAD_GATEWAY,
             detail=f"Failed to communicate with the target backend: {str(e)}",
         )
 
-    # Print the exact payload received from the clintel backend
-    print("\n--- RAW CHAT RESPONSE FROM CLINTEL ---")
+    # Log the exact payload received from the clintel backend
     try:
-        print(json.dumps(response.json(), indent=2, ensure_ascii=False))
+        formatted_json = json.dumps(response.json(), indent=2, ensure_ascii=False)
+        logger.info(f"\n--- RAW CHAT RESPONSE FROM CLINTEL ---\n{formatted_json}\n--------------------------------------")
     except Exception:
-        print(response.text)
-    print("--------------------------------------\n")
+        logger.info(f"\n--- RAW CHAT RESPONSE FROM CLINTEL ---\n{response.text}\n--------------------------------------")
 
     if phone_number:
         try:
