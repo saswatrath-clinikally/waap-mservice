@@ -20,6 +20,12 @@ class Settings(BaseSettings):
     # Anthropic transform config
     ANTHROPIC_API_KEY: str
 
+    # BigQuery config
+    GCP_PROJECT_ID: str | None = None
+    BIGQUERY_CONVERSATIONS_TABLE: str | None = None
+    BIGQUERY_SERVICE_ACCOUNT_KEY: str | None = None
+    BIGQUERY_AUTO_FLUSH: bool = True
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
