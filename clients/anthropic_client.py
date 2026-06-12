@@ -25,7 +25,6 @@ class AnthropicClient:
         self.sdk_client: Optional[Any] = None
         if HAS_ANTHROPIC and self.api_key:
             self.sdk_client = AsyncAnthropic(api_key=self.api_key)
-            logger.info("Anthropic SDK client initialized")
         else:
             logger.warning("Anthropic SDK is unavailable or API key is missing")
 

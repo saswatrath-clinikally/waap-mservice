@@ -1,11 +1,8 @@
-import json
-import logging
 from fastapi import APIRouter, Response
 
 from services.clintel_service import forward_chat_request
 from schemas.chat import ChatRequest
 
-logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.post("/chat")
@@ -22,14 +19,6 @@ async def chat_endpoint(
     phone_number = payload.get("phone_number")
 
     content, status_code, media_type = await forward_chat_request(phone_number, payload)
-
-    # Log the exact payload we are sending back to the Express Server
-    try:
-        formatted_json = json.dumps(json.loads(content), indent=2, ensure_ascii=False)
-        logger.info(f"\n--- FINAL CHAT RESPONSE TO EXPRESS ---\n{formatted_json}\n--------------------------------------")
-    except Exception:
-        fallback_text = content.decode("utf-8", errors="replace")
-        logger.info(f"\n--- FINAL CHAT RESPONSE TO EXPRESS ---\n{fallback_text}\n--------------------------------------")
 
     return Response(
         content=content,

@@ -38,7 +38,6 @@ class BigQueryClient:
         This exact approach is used in clintel to write the key to a temp file.
         """
         if os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-            logger.info("Using existing GOOGLE_APPLICATION_CREDENTIALS")
             return
             
         encoded_key = settings.BIGQUERY_SERVICE_ACCOUNT_KEY
@@ -60,7 +59,6 @@ class BigQueryClient:
                     
                 # Set environment variable for Google SDK
                 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = temp_path
-                logger.info("BigQuery credentials loaded from BIGQUERY_SERVICE_ACCOUNT_KEY env variable")
                 return
             except Exception as e:
                 logger.error(f"Failed to process BIGQUERY_SERVICE_ACCOUNT_KEY: {e}")
@@ -81,10 +79,6 @@ class BigQueryClient:
             )
             
             phone_numbers = [row.phone_number for row in results]
-            
-            if getattr(settings, 'BIGQUERY_AUTO_FLUSH', False):
-                logger.info("BIGQUERY_AUTO_FLUSH is enabled. Fetched fresh results.")
-                
             return phone_numbers
             
         except Exception as e:
